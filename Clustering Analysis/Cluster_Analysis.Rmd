@@ -1,0 +1,835 @@
+#TASK 1 
+#DATA1
+#1.Use K-means and hierarchical clustering methods to generate clusters
+
+#loading required packages
+library(factoextra)
+library(cluster)
+library(ClusterR)
+library(plotly)
+
+#load data
+df <- Data1
+#remove rows with missing values
+df1 <- na.omit(df)
+df1 <- df1[,-1]
+df1_final<-df1[,-4]
+
+#K-MEANS CLUSTERING
+#Finding the optimal number of clusters
+
+fviz_nbclust(df1_final[1:3], kmeans, method = "wss")
+fviz_nbclust(df1_final[1:3],kmeans,method ="silhouette")
+
+#calculate gap statistic based on number of clusters
+gap_stat <- clusGap(df1_final,
+                    FUN = kmeans,
+                    nstart = 25,
+                    K.max = 10,
+                    B = 50)
+
+#plot number of clusters vs. gap statistic
+fviz_gap_stat(gap_stat)
+
+# Fitting K-Means clustering Model 
+# to training dataset
+set.seed(240) 
+#Setting seed
+km <- kmeans(df1_final, 3, nstart = 20)
+df1_final$clusterclass <- km$cluster
+df1_final$clusterclass
+
+#HIERARCHICAL CLUSTERING 
+#define linkage methods
+m <- c( "average", "single", "complete", "ward")
+names(m) <- c( "average", "single", "complete", "ward")
+
+#function to compute agglomerative coefficient
+ac <- function(x) {
+  agnes(df1_final, method = x)$ac
+}
+
+#calculate agglomerative coefficient for each clustering linkage method
+sapply(m, ac)
+
+#perform hierarchical clustering using Ward's minimum variance
+clust <- agnes(df1_final, method = "ward")
+
+#produce dendrogram
+pltree(clust, cex = 0.6, hang = -1, main = "Dendrogram")
+
+#calculate gap statistic for each number of clusters (up to 10 clusters)
+gap_stat <- clusGap(df1_final, FUN = hcut, nstart = 25, K.max = 10, B = 50)
+
+#produce plot of clusters vs. gap statistic
+fviz_gap_stat(gap_stat)
+
+#compute distance matrix
+d <- dist(df1_final, method = "euclidean")
+
+#perform hierarchical clustering using Ward's method
+final_clust <- hclust(d, method = "ward.D2" )
+
+#cut the dendrogram into 4 clusters
+groups <- cutree(final_clust, k=4)
+
+#find number of observations in each cluster
+table(groups)
+
+#2. External validation
+external_validation(df1$Class, df1_final$clusterclass, method = "jaccard_index")
+
+#3. Plot the data points for each dataset and color them according to the original class
+df1 %>% plot_ly(x = ~X1, y = ~X2, z = ~X3, split = ~Class)
+
+#4. Plot the data points for each dataset and color them according to the class allocated by the clustering algorithm
+clusplot(Data1, df1_final$clusterclass , main = "2D representation of Cluster", shade =TRUE, labels = 2, lines = 0)
+
+#DATA2
+#1.Use K-means and hierarchical clustering methods to generate clusters
+
+#loading required packages
+library(factoextra)
+library(cluster)
+library(ClusterR)
+library(plotly)
+
+#load data
+df <- Data2
+#remove rows with missing values
+df2 <- na.omit(df)
+df2<- df2[,-1]
+df2_final <- df2[-4]
+
+#K-MEANS CLUSTERING
+#Finding the optimal number of clusters
+fviz_nbclust(df2_final, kmeans, method = "wss")
+fviz_nbclust(df2_final, kmeans, method = "silhouette")
+#calculate gap statistic based on number of clusters
+gap_stat <- clusGap(df2_final,
+                    FUN = kmeans,
+                    nstart = 25,
+                    K.max = 10,
+                    B = 50)
+
+#plot number of clusters vs. gap statistic
+fviz_gap_stat(gap_stat)
+
+# Fitting K-Means clustering Model 
+# to training dataset
+set.seed(240) 
+#Setting seed
+km <- kmeans(df2_final, centers = 3, nstart = 30)
+df2_final$clusterclass <- km$cluster
+df2_final$clusterclass
+
+#HIERARCHICAL CLUSTERING 
+#define linkage methods
+m <- c( "average", "single", "complete", "ward")
+names(m) <- c( "average", "single", "complete", "ward")
+
+#function to compute agglomerative coefficient
+ac <- function(x) {
+  agnes(df2_final, method = x)$ac
+}
+
+#calculate agglomerative coefficient for each clustering linkage method
+sapply(m, ac)
+
+#perform hierarchical clustering using Ward's minimum variance
+clust <- agnes(df2_final, method = "ward")
+
+#produce dendrogram
+pltree(clust, cex = 0.6, hang = -1, main = "Dendrogram")
+
+#calculate gap statistic for each number of clusters (up to 10 clusters)
+gap_stat <- clusGap(df2_final, FUN = hcut, nstart = 25, K.max = 10, B = 50)
+
+#produce plot of clusters vs. gap statistic
+fviz_gap_stat(gap_stat)
+
+#compute distance matrix
+d <- dist(df2_final, method = "euclidean")
+
+#perform hierarchical clustering using Ward's method
+final_clust <- hclust(d, method = "ward.D2" )
+
+#cut the dendrogram into 4 clusters
+groups <- cutree(final_clust, k=4)
+
+#find number of observations in each cluster
+table(groups)
+
+#2. External validation
+external_validation(df2$Class, df2_final$clusterclass, method = "jaccard_index")
+
+#3. Plot the data points for each dataset and color them according to the original class
+df2 %>% plot_ly(x = ~X, y = ~Y, z = ~C, split = ~Class)
+
+#4. Plot the data points for each dataset and color them according to the class allocated by the clustering algorithm
+clusplot(Data2, df2_final$clusterclass , main = "2D representation of Cluster", shade =TRUE, labels = 2, lines = 0)
+
+#DATA3
+#1.Use K-means and hierarchical clustering methods to generate clusters
+
+#loading required packages
+library(factoextra)
+library(cluster)
+library(ClusterR)
+library(plotly)
+
+#load data
+df <- Data3
+#remove rows with missing values
+df3 <- na.omit(df)
+df3<- df3[,-1]
+df3_final<-df3[,-4]
+
+
+#K-MEANS CLUSTERING
+#Finding the optimal number of clusters
+fviz_nbclust(df3_final, kmeans, method = "wss")
+fviz_nbclust(df3_final, kmeans, method = "silhouette")
+#calculate gap statistic based on number of clusters
+gap_stat <- clusGap(df3_final,
+                    FUN = kmeans,
+                    nstart = 25,
+                    K.max = 10,
+                    B = 50)
+
+#plot number of clusters vs. gap statistic
+fviz_gap_stat(gap_stat)
+
+# Fitting K-Means clustering Model 
+# to training dataset
+set.seed(240) 
+#Setting seed
+km <- kmeans(df3_final, centers = 4, nstart = 30)
+df3_final$clusterclass <- km$cluster
+df3_final$clusterclass
+
+#HIERARCHICAL CLUSTERING 
+#define linkage methods
+m <- c( "average", "single", "complete", "ward")
+names(m) <- c( "average", "single", "complete", "ward")
+
+#function to compute agglomerative coefficient
+ac <- function(x) {
+  agnes(df3_final, method = x)$ac
+}
+
+#calculate agglomerative coefficient for each clustering linkage method
+sapply(m, ac)
+
+#perform hierarchical clustering using Ward's minimum variance
+clust <- agnes(df3_final, method = "ward")
+
+#produce dendrogram
+pltree(clust, cex = 0.6, hang = -1, main = "Dendrogram")
+
+#calculate gap statistic for each number of clusters (up to 10 clusters)
+gap_stat <- clusGap(df3_final, FUN = hcut, nstart = 25, K.max = 10, B = 50)
+
+#produce plot of clusters vs. gap statistic
+fviz_gap_stat(gap_stat)
+
+#compute distance matrix
+d <- dist(df3_final, method = "euclidean")
+
+#perform hierarchical clustering using Ward's method
+final_clust <- hclust(d, method = "ward.D2" )
+
+#cut the dendrogram into 4 clusters
+groups <- cutree(final_clust, k=4)
+
+#find number of observations in each cluster
+table(groups)
+
+#2. External validation
+external_validation(df3$Class, df3_final$clusterclass, method = "jaccard_index")
+
+#3. Plot the data points for each dataset and color them according to the original class
+df3 %>% plot_ly(x = ~X1, y = ~X2, z = ~X3, split = ~Class)
+
+#4. Plot the data points for each dataset and color them according to the class allocated by the clustering algorithm
+clusplot(Data3, df3_final$clusterclass , main = "2D representation of Cluster", shade =TRUE, labels = 2, lines = 0)
+
+#DATA4
+#1.Use K-means and hierarchical clustering methods to generate clusters
+
+#loading required packages
+library(factoextra)
+library(cluster)
+library(ClusterR)
+library(plotly)
+
+#load data
+df <- Data4
+#remove rows with missing values
+df4 <- na.omit(df)
+df4<- df4[,-1]
+df4_final<-df4[,-4]
+
+#K-MEANS CLUSTERING
+#Finding the optimal number of clusters
+fviz_nbclust(df4_final, kmeans, method = "wss")
+fviz_nbclust(df4_final, kmeans, method = "silhouette")
+#calculate gap statistic based on number of clusters
+gap_stat <- clusGap(df4_final,
+                    FUN = kmeans,
+                    nstart = 25,
+                    K.max = 10,
+                    B = 50)
+
+#plot number of clusters vs. gap statistic
+fviz_gap_stat(gap_stat)
+
+# Fitting K-Means clustering Model 
+# to training dataset
+set.seed(240) 
+#Setting seed
+km <- kmeans(df4_final, centers = 2, nstart = 30)
+df4_final$clusterclass <- km$cluster
+df4_final$clusterclass
+
+#HIERARCHICAL CLUSTERING 
+#define linkage methods
+m <- c( "average", "single", "complete", "ward")
+names(m) <- c( "average", "single", "complete", "ward")
+
+#function to compute agglomerative coefficient
+ac <- function(x) {
+  agnes(df4_final, method = x)$ac
+}
+
+#calculate agglomerative coefficient for each clustering linkage method
+sapply(m, ac)
+
+#perform hierarchical clustering using Ward's minimum variance
+clust <- agnes(df4_final, method = "ward")
+
+#produce dendrogram
+pltree(clust, cex = 0.6, hang = -1, main = "Dendrogram")
+
+#calculate gap statistic for each number of clusters (up to 10 clusters)
+gap_stat <- clusGap(df4_final, FUN = hcut, nstart = 25, K.max = 10, B = 50)
+
+#produce plot of clusters vs. gap statistic
+fviz_gap_stat(gap_stat)
+
+#compute distance matrix
+d <- dist(df4_final, method = "euclidean")
+
+#perform hierarchical clustering using Ward's method
+final_clust <- hclust(d, method = "ward.D2" )
+
+#cut the dendrogram into 4 clusters
+groups <- cutree(final_clust, k=4)
+
+#find number of observations in each cluster
+table(groups)
+
+#2. External validation
+external_validation(df4$Class, df4_final$clusterclass, method = "jaccard_index")
+
+#3. Plot the data points for each dataset and color them according to the original class
+df4 %>% plot_ly(x = ~X1, y = ~X2, z = ~X3, split = ~Class)
+
+#4. Plot the data points for each dataset and color them according to the class allocated by the clustering algorithm
+clusplot(Data4, df4_final$clusterclass , main = "2D representation of Cluster", shade =TRUE, labels = 2, lines = 0)
+
+#DATA5
+#1.Use K-means and hierarchical clustering methods to generate clusters
+
+#loading required packages
+library(factoextra)
+library(cluster)
+library(ClusterR)
+library(plotly)
+
+#load data
+df <- Data5
+#remove rows with missing values
+df5 <- na.omit(df)
+View(df5)
+df5 <- df5[,-1]
+df5_final<-df5[1:3]
+
+#K-MEANS CLUSTERING
+#Finding the optimal number of clusters
+
+fviz_nbclust(df5[1:3], kmeans, method = "wss")
+fviz_nbclust(df5[1:3],kmeans,method ="silhouette")
+
+#calculate gap statistic based on number of clusters
+gap_stat <- clusGap(df5_final,
+                    FUN = kmeans,
+                    nstart = 25,
+                    K.max = 10,
+                    B = 50)
+
+#plot number of clusters vs. gap statistic
+fviz_gap_stat(gap_stat)
+
+# Fitting K-Means clustering Model 
+# to training dataset
+set.seed(300) 
+#Setting seed
+km <- kmeans(df5_final, 2, nstart = 10)
+df5_final$clusterclass <- km$cluster
+df5_final$clusterclass
+
+#HIERARCHICAL CLUSTERING 
+#define linkage methods
+m <- c( "average", "single", "complete", "ward")
+names(m) <- c( "average", "single", "complete", "ward")
+
+#function to compute agglomerative coefficient
+ac <- function(x) {
+  agnes(df5_final, method = x)$ac
+}
+
+#calculate agglomerative coefficient for each clustering linkage method
+sapply(m, ac)
+
+#perform hierarchical clustering using Ward's minimum variance
+clust <- agnes(df5_final, method = "ward")
+
+#produce dendrogram
+pltree(clust, cex = 0.6, hang = -1, main = "Dendrogram")
+
+#calculate gap statistic for each number of clusters (up to 10 clusters)
+gap_stat <- clusGap(df5_final, FUN = hcut, nstart = 25, K.max = 10, B = 50)
+
+#produce plot of clusters vs. gap statistic
+fviz_gap_stat(gap_stat)
+
+#compute distance matrix
+d <- dist(df5_final, method = "euclidean")
+
+#perform hierarchical clustering using Ward's method
+final_clust <- hclust(d, method = "ward.D2" )
+
+#cut the dendrogram into 4 clusters
+groups <- cutree(final_clust, k=4)
+
+#find number of observations in each cluster
+table(groups)
+
+#2. External validation
+external_validation(df5$Class, df5_final$clusterclass, method = "jaccard_index")
+
+#3. Plot the data points for each dataset and color them according to the original class
+df5 %>% plot_ly(x = ~X1, y = ~X2, z = ~X3, split = ~Class)
+
+#4. Plot the data points for each dataset and color them according to the class allocated by the clustering algorithm
+clusplot(Data5, df5_final$clusterclass , main = "2D representation of Cluster", shade =TRUE, labels = 2, lines = 0)
+
+#DATA6
+#1.Use K-means and hierarchical clustering methods to generate clusters
+
+#loading required packages
+library(factoextra)
+library(cluster)
+library(ClusterR)
+library(plotly)
+
+#load data
+df <- Data6
+#remove rows with missing values
+df6 <- na.omit(df)
+df6<- df6[,-1]
+df6_final<-df6[,-3]
+
+#K-MEANS CLUSTERING
+#Finding the optimal number of clusters
+fviz_nbclust(df6_final, kmeans, method = "wss")
+#calculate gap statistic based on number of clusters
+gap_stat <- clusGap(df6_final,
+                    FUN = kmeans,
+                    nstart = 25,
+                    K.max = 10,
+                    B = 50)
+
+#plot number of clusters vs. gap statistic
+fviz_gap_stat(gap_stat)
+
+# Fitting K-Means clustering Model 
+# to training dataset
+set.seed(240) 
+#Setting seed
+km <- kmeans(Data6, centers = 4, nstart = 30)
+df6_final$clusterclass <- km$cluster
+df6_final$clusterclass
+
+#HIERARCHICAL CLUSTERING 
+#define linkage methods
+m <- c( "average", "single", "complete", "ward")
+names(m) <- c( "average", "single", "complete", "ward")
+
+#function to compute agglomerative coefficient
+ac <- function(x) {
+  agnes(df6_final, method = x)$ac
+}
+
+#calculate agglomerative coefficient for each clustering linkage method
+sapply(m, ac)
+
+#perform hierarchical clustering using Ward's minimum variance
+clust <- agnes(df6_final, method = "ward")
+
+#produce dendrogram
+pltree(clust, cex = 0.6, hang = -1, main = "Dendrogram")
+
+#calculate gap statistic for each number of clusters (up to 10 clusters)
+gap_stat <- clusGap(df6_final, FUN = hcut, nstart = 25, K.max = 10, B = 50)
+
+#produce plot of clusters vs. gap statistic
+fviz_gap_stat(gap_stat)
+
+#compute distance matrix
+d <- dist(df6_final, method = "euclidean")
+
+#perform hierarchical clustering using Ward's method
+final_clust <- hclust(d, method = "ward.D2" )
+
+#cut the dendrogram into 4 clusters
+groups <- cutree(final_clust, k=4)
+
+#find number of observations in each cluster
+table(groups)
+
+#2. Evaluate the performance of the clustering algorithm using external validation metrics
+external_validation(df6$Class, df6_final$clusterclass, method = "jaccard_index")
+
+#3. Plot the data points for each dataset and color them according to the original class
+df6 %>% plot_ly(x = ~X1, y = ~X2, split = ~Class)
+
+#4. Plot the data points for each dataset and color them according to the class allocated by the clustering algorithm
+clusplot(Data6, df6_final$clusterclass, main = "2D representation of Cluster", shade =TRUE, labels = 2, lines = 0)
+
+#DATA7
+#1.Use K-means and hierarchical clustering methods to generate clusters
+
+#loading required packages
+library(factoextra)
+library(cluster)
+library(ClusterR)
+library(plotly)
+
+#load data
+df <- Data7
+#remove rows with missing values
+df7 <- na.omit(df)
+df7 <- df7[,-1]
+df7_final<-df7[,-3]
+
+#K-MEANS CLUSTERING
+#Finding the optimal number of clusters
+fviz_nbclust(df7_final, kmeans, method = "wss")
+#calculate gap statistic based on number of clusters
+gap_stat <- clusGap(df7_final,
+                    FUN = kmeans,
+                    nstart = 25,
+                    K.max = 10,
+                    B = 50)
+
+#plot number of clusters vs. gap statistic
+fviz_gap_stat(gap_stat)
+
+# Fitting K-Means clustering Model 
+# to training dataset
+set.seed(240) 
+#Setting seed
+km <- kmeans(Data7, centers = 2, nstart = 30)
+df7_final$clusterclass <- km$cluster
+df7_final$clusterclass
+
+#HIERARCHICAL CLUSTERING 
+#define linkage methods
+m <- c( "average", "single", "complete", "ward")
+names(m) <- c( "average", "single", "complete", "ward")
+
+#function to compute agglomerative coefficient
+ac <- function(x) {
+  agnes(df7_final, method = x)$ac
+}
+
+#calculate agglomerative coefficient for each clustering linkage method
+sapply(m, ac)
+
+#perform hierarchical clustering using Ward's minimum variance
+clust <- agnes(df7_final, method = "ward")
+
+#produce dendrogram
+pltree(clust, cex = 0.6, hang = -1, main = "Dendrogram")
+
+#calculate gap statistic for each number of clusters (up to 10 clusters)
+gap_stat <- clusGap(df7_final, FUN = hcut, nstart = 25, K.max = 10, B = 50)
+
+#produce plot of clusters vs. gap statistic
+fviz_gap_stat(gap_stat)
+
+#compute distance matrix
+d <- dist(df7_final, method = "euclidean")
+
+#perform hierarchical clustering using Ward's method
+final_clust <- hclust(d, method = "ward.D2" )
+
+#cut the dendrogram into 4 clusters
+groups <- cutree(final_clust, k=2)
+
+#find number of observations in each cluster
+table(groups)
+
+#2. Evaluate the performance of the clustering algorithm using external validation metrics
+external_validation(df7$Class, df7_final$clusterclass, method = "jaccard_index")
+
+#3. Plot the data points for each dataset and color them according to the original class
+df7 %>% plot_ly(x = ~X1, y = ~X2, split = ~Class)
+
+#4. Plot the data points for each dataset and color them according to the class allocated by the clustering algorithm
+clusplot(Data7, df7_final$cluster, main = "2D representation of Cluster", shade =TRUE, labels = 2, lines = 0)
+
+#DATA8 
+#1.Use K-means and hierarchical clustering methods to generate clusters
+
+#loading required packages
+library(factoextra)
+library(cluster)
+library(ClusterR)
+library(plotly)    
+
+#load data
+df <- Data8
+#remove rows with missing values
+df8 <- na.omit(df)
+df8 <- df8[,-1]
+df8_final <- df8[,-4]
+
+#K-MEANS CLUSTERING
+#Finding the optimal number of clusters
+fviz_nbclust(df8_final, kmeans, method = "wss")
+fviz_nbclust(df8_final,kmeans,method ="silhouette")
+
+#calculate gap statistic based on number of clusters
+gap_stat <- clusGap(df8_final,
+                    FUN = kmeans,
+                    nstart = 25,
+                    K.max = 10,
+                    B = 50)
+
+#plot number of clusters vs. gap statistic
+fviz_gap_stat(gap_stat)
+
+# Fitting K-Means clustering Model 
+# to training dataset
+set.seed(20) 
+#Setting seed
+km <- kmeans(df8_final, 2, nstart = 20)
+df8_final$clusterclass <- km$cluster
+df8_final$clusterclass
+
+#HIERARCHICAL CLUSTERING 
+#define linkage methods
+m <- c( "average", "single", "complete", "ward")
+names(m) <- c( "average", "single", "complete", "ward")
+
+#function to compute agglomerative coefficient
+ac <- function(x) {
+  agnes(df8_final, method = x)$ac
+}
+
+#calculate agglomerative coefficient for each clustering linkage method
+sapply(m, ac)
+
+#perform hierarchical clustering using Ward's minimum variance
+clust <- agnes(df8_final, method = "ward")
+
+#produce dendrogram
+pltree(clust, cex = 0.6, hang = -1, main = "Dendrogram")
+
+#calculate gap statistic for each number of clusters (up to 10 clusters)
+gap_stat <- clusGap(df8_final, FUN = hcut, nstart = 25, K.max = 10, B = 50)
+
+#produce plot of clusters vs. gap statistic
+fviz_gap_stat(gap_stat)
+
+#compute distance matrix
+d <- dist(df8_final, method = "euclidean")
+
+#perform hierarchical clustering using Ward's method
+final_clust <- hclust(d, method = "ward.D2" )
+
+#cut the dendrogram into 4 clusters
+groups <- cutree(final_clust, k=1)
+
+#find number of observations in each cluster
+table(groups)
+
+#2. External validation
+external_validation(df8$Class, df8_final$clusterclass, method = "jaccard_index")
+
+#3. Plot the data points for each dataset and color them according to the original class
+df8 %>% plot_ly(x = ~X1, y = ~X2, z = ~X3, split = ~Class)
+
+#4. Plot the data points for each dataset and color them according to the class allocated by the clustering algorithm
+clusplot(Data8, df8_final$clusterclass , main = "2D representation of Cluster", shade =TRUE, labels = 2, lines = 0)
+
+
+#Task2
+
+library(plot3D)                                                             
+library(factoextra)
+library(cluster)
+library(ClusterR)
+library(dplyr)
+library(plotly)
+
+#load data
+dfw <- World_Indicators
+#remove rows with missing values
+dfw <- dfw[,c(-4,-11)]
+dfw <- dfw[,c(8,10,11,16,18)]
+dfwi <- na.omit(dfw)
+dfwi_final <- dfwi[,-5] 
+
+#K-MEANS CLUSTERING
+#Finding the optimal number of clusters
+fviz_nbclust((dfwi_final), kmeans, method = "wss")
+fviz_nbclust(dfwi_final, kmeans, method = "silhouette")
+#calculate gap statistic based on number of clusters
+gap_stat <- clusGap(dfwi_final, 
+                    FUN = kmeans,
+                    nstart = 25,
+                    K.max = 10,
+                    B = 50)
+
+#plot number of clusters vs. gap statistic
+fviz_gap_stat(gap_stat)
+
+# Fitting K-Means clustering Model 
+# to training dataset
+set.seed(240) 
+#Setting seed
+km <- kmeans(dfwi_final, centers = 5, nstart = 30)
+dfwi$clusterclass<-km$cluster
+
+#2. Internal Validation
+
+##Silhouette method
+set.seed(5)
+dis = dist(dfwi_final)^2
+dis
+km <- kmeans(dfwi_final,5)
+sil<- silhouette(km$cluster, dis)
+#windows() 
+plot(sil)
+
+## Dunn Index
+library(clValid)
+set.seed(5)
+km <- kmeans(dfwi_final,5)
+dunn(clusters = km$cluster,Data = dfwi_final)
+
+## Calisnki-Harabasz index 
+library(fpc)
+set.seed(10)
+km <- kmeans(dfwi_final,5)
+round(calinhara(dfwi_final,km$cluster),digits=4)
+
+
+# Conclusion:
+
+# By using different internal validation methods we take number of clusters as '5' 
+
+#HIERARCHICAL CLUSTERING 
+#define linkage methods
+m <- c( "average", "single", "complete", "ward")
+names(m) <- c( "average", "single", "complete", "ward")
+
+#function to compute agglomerative coefficient
+ac <- function(x) {
+  agnes(dfwi_final, method = x)$ac
+}
+
+#calculate agglomerative coefficient for each clustering linkage method
+sapply(m, ac)
+
+#perform hierarchical clustering using Ward's minimum variance
+clust <- agnes(dfwi_final, method = "ward")
+
+#produce dendrogram
+pltree(clust, cex = 0.6, hang = -1, main = "Dendrogram")
+
+#calculate gap statistic for each number of clusters (up to 10 clusters)
+gap_stat <- clusGap(dfwi_final, FUN = hcut, nstart = 25, K.max = 10, B = 50)
+
+#produce plot of clusters vs. gap statistic
+fviz_gap_stat(gap_stat)
+
+#compute distance matrix
+d <- dist(dfwi_final, method = "euclidean")
+
+#perform hierarchical clustering using Ward's method
+final_clust <- hclust(d, method = "ward.D2" )
+
+#cut the dendrogram into 5 clusters
+groups <- cutree(final_clust, k=5)
+
+#find number of observations in each cluster
+table(groups)
+
+# Part 3
+
+newdata <- dfwi[order(dfwi$clusterclass),]
+country_class<-newdata[,5:6]
+View(country_class)
+
+# Part 4
+#plot
+
+# plot of Infant Mortality vs Urban Population
+
+dfwi %>% plot_ly(x = ~Infant.Mortality.Rate, y = ~Population.Urban,split = ~clusterclass)
+
+# plot of Infant Mortality vs Female Life Expectancy
+
+dfwi %>% plot_ly(x = ~Infant.Mortality.Rate, y = ~Life.Expectancy.Female,split = ~clusterclass)
+
+# plot of Male Life Expectancy vs Female Life Expectancy
+
+dfwi %>% plot_ly(x = ~Life.Expectancy.Male, y = ~Life.Expectancy.Female,split = ~clusterclass)
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
